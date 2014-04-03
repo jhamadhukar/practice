@@ -1,3 +1,5 @@
+Class
+----------------
 1) static constructor doesnot have access modifier
 2) static constructor will fire first and instance constructor after that.
 3) a static constructor must be parameterless that means one class should have only one static constructor.
@@ -10,3 +12,16 @@ the memory for an unreferenced object.
 8) A partial method consists of two parts: a definition and an implementation.Partial methods must be void and are implicitly private.
 9) There are two ways to specify a base class with partial classes: a) Specify the (same) base class on each participant. b) Specify the base class on just one participant.
 10) a partial method must be in a partial class or struct.
+Polymorphism
+------------------
+1) An object reference can be:
+		a) Implicitly upcast to a base class reference
+		b) Explicitly downcast to a subclass reference
+2) An upcast operation creates a base class reference from a subclass reference. After the upcast, variable a still references the same Stock object as variable msft.
+The object being referenced is not itself altered or converted:
+			Stock msft = new Stock();
+			Asset a = msft; // Upcast
+			Console.WriteLine (a == msft); // True
+			Console.WriteLine (a.Name); // OK
+			Console.WriteLine (a.SharesOwned); // Error: SharesOwned undefined
+The last line generates a compile-time error because the variable a is of type Asset, even though it refers to an object of type Stock

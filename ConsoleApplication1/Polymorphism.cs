@@ -12,6 +12,19 @@ namespace ConsoleApplication1
         {
             House house = new House { Name="house"};
             Display(house);
+
+            //UpCasting
+            Stock msft = new Stock();
+            Asset a = msft;
+            if (a == msft)
+                Console.WriteLine("Identical");
+
+            Console.WriteLine(a.Name);
+            //Console.WriteLine(a.SharesOwned); //Error
+
+            //downcasting
+
+
             Console.Read();
         }
         public static void Display(Asset asset)
