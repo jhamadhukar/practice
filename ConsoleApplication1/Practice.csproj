@@ -32,7 +32,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>ConsoleApplication1.OrderOfExecution</StartupObject>
+    <StartupObject>ConsoleApplication1.Polymorphism</StartupObject>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -47,6 +47,7 @@
     <Compile Include="Inheritence.cs" />
     <Compile Include="OrderOfExecution.cs" />
     <Compile Include="PartialClassAndMethods.cs" />
+    <Compile Include="Polymorphism.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
