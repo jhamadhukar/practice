@@ -1,0 +1,12 @@
+1) static constructor doesnot have access modifier
+2) static constructor will fire first and instance constructor after that.
+3) a static constructor must be parameterless that means one class should have only one static constructor.
+4) static constructor cannot have an explicit 'this' or 'base' constructor call.
+5) Static field initializers run in the order in which the fields are declared
+6) A class can be marked static, indicating that it must be composed solely of static
+members and cannot be subclassed
+7) Finalizers are class-only methods that execute before the garbage collector reclaims
+the memory for an unreferenced object.
+8) A partial method consists of two parts: a definition and an implementation.Partial methods must be void and are implicitly private.
+9) There are two ways to specify a base class with partial classes: a) Specify the (same) base class on each participant. b) Specify the base class on just one participant.
+10) a partial method must be in a partial class or struct.
