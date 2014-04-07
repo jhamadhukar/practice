@@ -1,0 +1,85 @@
+1) An assembly is the basic unit of deployment in .NET and is also the container for all types. An assembly contains compiled types with their IL code, runtime resources, and information to assist with versioning, security, and referencing other assemblies.
+
+2) An assembly contains four kinds of things:
+	a) An assembly manifest
+		Provides information to the .NET runtime, such as the assembly’s name, version, requested permissions, and other assemblies that it references
+	b) An application manifest
+		Provides information to the operating system, such as how the assembly should be deployed and whether administrative elevation is required
+	c) Compiled types
+		The compiled IL code and metadata of the types defined within the assembly
+	d) Resources
+		Other data embedded within the assembly, such as images and localizable text
+3) only the assembly manifest is mandatory
+4) You can view the contents of an assembly’s manifest with the .NET tool ildasm.exe. We can use reflection to do the same programmatically.
+5) The Application Manifest
+	a) A .NET application manifest has a root element called assembly in the XML namespace urn:schemas-microsoft-com:asm.v1:
+		<?xml version="1.0" encoding="utf-8"?>
+		<assembly manifestVersion="1.0" xmlns="urn:schemas-microsoft-com:asm.v1">
+			<trustInfo xmlns="urn:schemas-microsoft-com:asm.v2">
+				<security>
+					<requestedPrivileges>
+						<requestedExecutionLevel level="requireAdministrator" />
+					</requestedPrivileges>
+				</security>
+			</trustInfo>
+		</assembly>
+	b) You can deploy a .NET application manifest in two ways:
+		i) As a specially named file located in the same folder as the assembly
+		ii) Embedded within the assembly itself
+	c) As a separate file, its name must match that of the assembly’s, plus .manifest. So, if an assembly was named MyApp.exe, its manifest would be named MyApp.exe.manifest.
+    d) To embed an application manifest file into an assembly, first build the assembly and then call the .NET mt tool as follows:
+		mt -manifest MyApp.exe.manifest -outputresource:MyApp.exe;#1
+6) The contents of an assembly are span to multiple files called Modules, this is useful when building an assembly containing code compiled in a mixture of programming languages
+7) There are a number of ways to obtain an assembly object: the simplest is via a Type’s Assembly property:
+			Assembly a = typeof (Program).Assembly;
+		or, in Metro applications:
+			Assembly a = typeof (Program).GetTypeInfo().Assembly;
+8) A strongly named assembly has a unique and untamperable identity. This requires a public/private key pair. The public key provides the unique identifying number, and the private key facilitates signing.
+9) A assembly must be strongly named to be installed in GAC(Global assembly cache).
+10) To give an assembly a strong name, first generate a public/private key pair with the sn.exe utility:
+		sn.exe -k MyKeyPair.snk
+		a) then compile with the /keyfile switch:
+			csc.exe /keyfile:MyKeyPair.snk Program.cs
+11) A delay-signed assembly is flagged with the correct public key, but not signed with the private key. A delay-signed assembly is equivalent to a tampered assembly and would normally be rejected by the CLR. 
+	The developer, however, instructs the CLR to bypass validation for the delay-sign assemblies on that computer, allowing the unsigned assemblies to run. When it comes time for final deployment, the private 
+	key holder re-signs the assembly with the real key pair.
+12) To delay-sign, you need a file containing just the public key. You can extract this from a key pair by calling sn with the -p switch:
+		sn -k KeyPair.snk
+		sn -p KeyPair.snk PublicKeyOnly.pk  Or sn -e YourLibrary.dll PublicKeyOnly.pk
+	KeyPair.snk is kept secure and PublicKeyOnly.pk is freely distributed.
+13) You then delay-sign with PublicKeyOnly.pk by calling csc with the /delaysign+ switch:
+	csc /delaysign+ /keyfile: PublicKeyOnly.pk /target:library YourLibrary.cs 
+14) The next step is to instruct the .NET runtime to skip assembly identity verification on the development computers running the delay-signed assembl
+		sn -Vr YourLibrary.dll
+15) The final step is to fully sign the assembly prior to deployment. 
+		sn -R YourLibrary.dll KeyPair.snk
+16) You can then reinstate assembly verification on development machines as follows:
+		sn -Vu YourLibrary.dll
+Authenticode Signing
+----------------------
+1) Strong-name signing use prove that assemblies A, B, and C came from the same party (assuming the private key hasn’t been leaked), it can’t tell you who that party was. 
+	In order to know that the party was Joe Albahari—or Microsoft Corporation—you need Authenticode.
+2) Authenticode works with not only .NET assemblies, but also unmanaged executables and binaries such as ActiveX controls or .msi deployment files.
+3) Signing with Authenticode requires that you contact a Certificate Authority (CA) with evidence of your personal identity or company’s identity. Once the CA has checked your documents, it will issue an X.509 codesigning
+	certificate that is typically valid for one to five years. This enables you to sign assemblies with the signtool utility.
+4) To load a certificate into the computer’s certificate store, go to the Windows Control Panel and select Internet Options→Content tab→Certificates button→Import. Once the import is complete, 
+	click the View button on the certificate, go to the Details tab, and copy the certificate’s thumbprint. This is the SHA-1 hash that you’ll subsequently need to identity the certificate when signing.
+5) Then we can sign our assembly with signtool 
+	signtool sign /sha1 (thumbprint) filename
+6) We can validate and get information about publisher using 
+	Publisher p = someAssembly.Evidence.GetHostEvidence<Publisher>();
+
+GAC
+-------------------------
+1) Install Assemblies to the GAC 
+		gacutil /i MyAssembly.dll
+2) If the assembly already exists in the GAC with the same public key and version, it’s updated. You don’t have to uninstall the old one first. To uninstall an assembly:
+	gacutil /u MyAssembly  //note the lack of a file extension
+3) Calling gacutil with the /l switch lists all assemblies in the GAC
+4) GAC can hold multiple version of the same assembly. This is called side-by-side execution. Side-by-side execution prevents the “DLL hell” that can otherwise occur when a shared assembly
+	is unilaterally updated: applications designed for the older version might unexpectedly break.
+5) when you want to apply bug fixes or minor updates to existing assemblies. You have two options:
+		a) Reinstall the fixed assembly to the GAC with the same version number.
+		b) Compile the fixed assembly with a new version number and install that to the GAC.
+The difficulty with the first option is that there’s no way to apply the update selectively to certain applications. It’s all or nothing. The difficulty with the second option is that applications will not normally use the newer assembly version without being
+recompiled. There is a workaround—you can create a publisher policy allowing assembly version redirection—at the cost of increasing deployment complexity.

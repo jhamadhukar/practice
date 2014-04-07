@@ -57,7 +57,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="ImprotantPoints.txt" />
+    <Content Include="Documentation\AssemblyNotes.txt" />
+    <Content Include="Documentation\Collection.txt" />
+    <Content Include="Documentation\ImprotantPoints.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
