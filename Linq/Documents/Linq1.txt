@@ -1,0 +1,19 @@
+﻿1) The basic units of data in LINQ are sequences and elements. A sequence is any object that implements IEnumerable<T> and an element is each item in the sequence.
+2) Local in memory collection of objects/arrays are called local sequence.
+3) A query operator is a method that transforms a sequence. A typical query operator accepts an input sequence and emits a transformed output sequence. In the Enumerable class in System.Linq, 
+	there are around 40 query operators—all implemented as static extension methods. These are called standard query operators.
+4) Queries that operate over local sequences are called local queries or LINQ-to-objects queries.
+5) LINQ also supports sequences that can be dynamically fed from a remote data source such as a SQL Server. These sequences additionally implement the IQueryable<T> interface.
+Fluent syntax
+----------------------
+1) Common syntax for fluent syntax
+	string[] names = { "Tom", "Dick", "Harry", "Mary", "Jay" };
+	IEnumerable<string> query = names
+			.Where (n => n.Contains ("a"))
+			.OrderBy (n => n.Length)
+			.Select (n => n.ToUpper());
+Here n is privately scoped to each lambada expressions. When query operators are chained as in this example, the output sequence of one operator is the input sequence of the next.
+2) A lambda expression that takes a value and returns a bool is called a predicate.
+3) The query operator evaluates your lambda expression upon demand—typically once per element in the input sequence.
+4) The aggregation operators return a scalar value; usually of numeric type like Count(), Min().
+5) 
