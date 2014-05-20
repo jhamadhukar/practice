@@ -1,0 +1,110 @@
+Class
+----------------
+1) static constructor doesnot have access modifier
+2) static constructor will fire first and instance constructor after that.
+3) a static constructor must be parameterless that means one class should have only one static constructor.
+4) static constructor cannot have an explicit 'this' or 'base' constructor call.
+5) Static field initializers run in the order in which the fields are declared
+6) A class can be marked static, indicating that it must be composed solely of static
+members and cannot be subclassed
+7) Finalizers are class-only methods that execute before the garbage collector reclaims
+the memory for an unreferenced object.
+8) A partial method consists of two parts: a definition and an implementation.Partial methods must return void and are implicitly private.
+9) Partial methods can have ref but not out parameters.
+10) Since Partial methods are implicitly privte so it cannot be virtual.
+11) Partial methods cannot be extern, because the presence of the body determines whether they are defining or implementing.
+12) Partial methods can have static and unsafe modifiers.
+13) There are two ways to specify a base class with partial classes: a) Specify the (same) base class on each participant. b) Specify the base class on just one participant.
+14) a partial method must be in a partial class or struct.
+15) you can expose internal members to other friend assemblies by adding the System.Runtime.CompilerServices.InternalsVisibleTo assembly attribute, specifying the name of the friend assembly as follows:
+		[assembly: InternalsVisibleTo ("Friend")]
+16) A type caps the accessibility of its declared members
+		class C { public void Foo() {} }
+	C’s (default) internal accessibility caps Foo’s accessibility, effectively making Foo internal.
+17) A subclass itself can be less accessible than a base class, but not more:
+		internal class A {}
+		public class B : A {} // Error
+18) If a class is Inherited by two interfaces having method with same name: See implementation in ConsoleApplication1.Interface.cs
+		
+
+Polymorphism and Inheritence
+-----------------------------
+1) An object reference can be:
+		a) Implicitly upcast to a base class reference
+		b) Explicitly downcast to a subclass reference
+2) An upcast operation creates a base class reference from a subclass reference. After the upcast, variable a still references the same Stock object as variable msft.
+The object being referenced is not itself altered or converted:
+			Stock msft = new Stock();
+			Asset a = msft; // Upcast
+			Console.WriteLine (a == msft); // True
+			Console.WriteLine (a.Name); // OK
+			Console.WriteLine (a.SharesOwned); // Error: SharesOwned undefined
+The last line generates a compile-time error because the variable a is of type Asset, even though it refers to an object of type Stock
+3) The as operator performs a downcast that evaluates to null (rather than throwing an exception) if the downcast fails.
+4) The is operator tests whether a reference conversion would succeed; in other words, whether an object derives from a specified class (or implements an interface). It is often used to test before downcasting.
+5) A function marked as virtual can be overridden by subclasses wanting to provide a specialized implementation. Methods, properties, indexers, and events can all be declared virtual.
+6) The signatures, return types, and accessibility of the virtual and overridden methods must be identical. An overridden method can call its base class implementation via the base keyword.
+7) The base keyword is similar to the this keyword. It serves two essential purposes:
+		a) Accessing an overridden and hidden function member from the subclass
+		b) Calling a base-class constructor.
+8) If a constructor in a subclass omits the base keyword, the base type’s parameterless constructor is implicitly called but If the base class has no accessible parameterless constructor, subclasses are forced
+to use the base keyword in their constructors. 
+9)  Base-class constructors always execute first; this ensures that base initialization occurs before specialized initialization.
+10) When an object is instantiated, initialization takes place in the following order:
+	1. From subclass to base class:
+		a. Fields are initialized.
+		b. Arguments to base-class constructor calls are evaluated.
+	2. From base class to subclass:
+		a. Constructor bodies execute.
+	The following code demonstrates:
+		public class B
+		{
+		int x = 1; // Executes 3rd
+		public B (int x)
+		{
+		... // Executes 4th
+		}
+		}
+		public class D : B
+		{
+		int y = 1; // Executes 1st
+		public D (int x)
+		: base (x + 1) // Executes 2nd
+		{
+		... // Executes 5th
+		}
+		}
+11)		static void Foo (Asset a) { }
+		static void Foo (House h) { }
+When an overload is called, the most specific type has precedence:
+		House h = new House (...);
+		Foo(h); // Calls Foo(House)
+The particular overload to call is determined statically (at compile time) rather than at runtime.
+The following code calls Foo(Asset), even though the runtime type of a is House:
+		Asset a = new House (...);
+		Foo(a); // Calls Foo(Asset)
+
+Abstract class and mothod
+-------------------------
+1) Abstract classes are able to define abstract members. Abstract members are like virtual members, except they don’t provide a default implementation. That implementation must be provided by the subclass, unless that subclass is also
+declared abstrac
+
+Structs
+-------------------------
+1) A struct is similar to a class, with the following key differences:
+	a) A struct is a value type, whereas a class is a reference type.
+    b) A struct does not support inheritance (other than implicitly deriving from object, or more precisely, System.ValueType).
+2) A struct can have all the members a class can, except the following:
+	a) A parameterless constructor
+	b) A finalizer
+	c) Virtual members
+3) You can’t have field initializers in a struct.
+4) When you define a struct constructor, you must explicitly assign every field.
+	public struct Point
+	{
+		int x = 1; // Illegal: cannot initialize field
+		int y;
+		public Point() {} // Illegal: cannot have
+		// parameterless constructor
+		public Point (int x) {this.x = x;} // Illegal: must assign field y
+	}
